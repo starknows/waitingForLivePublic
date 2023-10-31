@@ -1,0 +1,71 @@
+@import ./reset.css
+@import ./_text
+@import ./_input
+@import ./_variable
+// flex
+.d-flex
+    display: flex
+    &.f-center
+        justify-content: center
+        align-items: center
+    &.f-col
+        flex-direction: column
+    &.f-wrap
+        flex-wrap: wrap
+    &.content-center
+        justify-content: center
+    &.content-between
+        justify-content: space-between
+    &.content-evenly
+        justify-content: space-evenly
+    &.content-around
+        justify-content: space-around
+    &.items-center
+        align-items: center
+    &.items-stretch
+        align-items: stretch
+// size
+.w-100
+    width: 100%
+.h-100
+    height: 100%
+.m-1
+    margin: 1rem
+    &.x2
+        margin: 2rem
+.m-top
+    margin-top: 1rem
+.m-bottom
+    margin-bottom: 1rem
+.m-horizon
+    margin-left: 1rem
+    margin-right: 1rem
+    &.x2
+        margin-left: 2rem
+        margin-right: 2rem
+.m-vertical
+    margin-top: 1rem
+    margin-bottom: 1rem
+    &.x2
+        margin-top: 2rem
+        margin-bottom: 2rem
+.p-1
+    padding: 1rem
+    &.x2
+        padding: 2rem
+.p-horizon
+    padding-left: 1rem
+    padding-right: 1rem
+    &.x2
+        padding-left: 2rem
+        padding-right: 2rem
+.p-vertical
+    padding-top: 1rem
+    padding-bottom: 1rem
+    &.x2
+        padding-top: 2rem
+        padding-bottom: 2rem
+.pst-relative
+    position: relative
+.pst-abs
+    position: absolute
