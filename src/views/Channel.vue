@@ -41,10 +41,6 @@ const doFetching = async (channelId) => {
     fetch("https://service-starknows.onrender.com/auth", {
       method: "post",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: "wuxu",
-        password: "755ec607-b660-402d-b70e-458d2a3a05cc",
-      }),
     })
       .then((res) => res.json())
       .then((json) => {

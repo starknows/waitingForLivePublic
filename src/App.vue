@@ -2,23 +2,7 @@
 RouterView
 </template>
 
-<script setup>
-// import { provide } from "vue";
-
-// fetch("/auth", {
-//   method: "post",
-//   headers: { "Content-Type": "application/json" },
-//   body: JSON.stringify({
-//     name: "wuxu",
-//     password: "755ec607-b660-402d-b70e-458d2a3a05cc",
-//   }),
-// })
-//   .then((res) => res.json())
-//   .then((json) => {
-//     console.log(json);
-//     provide("token", json.token);
-//   });
-</script>
+<script setup></script>
 <style lang="sass">
 #app
   width: 100%
