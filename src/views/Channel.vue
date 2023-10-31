@@ -38,7 +38,7 @@ const getSubtractTimeFromNow = (dateString) => {
 };
 const doFetching = async (channelId) => {
   if (safeId) {
-    fetch("/auth", {
+    fetch("https://service-starknows.onrender.com/auth", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -50,7 +50,7 @@ const doFetching = async (channelId) => {
       .then((json) => {
         const body = JSON.stringify({ channelId });
         token.value = json.token;
-        fetch("/api/last-stream", {
+        fetch("https://service-starknows.onrender.com/api/last-stream", {
           method: "post",
           headers: {
             Authorization: `Bearer ${json.token}`,
@@ -68,7 +68,7 @@ const doFetching = async (channelId) => {
               nowStreamTime.value = getSubtractTimeFromNow(json.data);
             }, 1000);
           });
-        fetch("/api/channel-name", {
+        fetch("https://service-starknows.onrender.com/api/channel-name", {
           method: "post",
           headers: {
             Authorization: `Bearer ${json.token}`,
