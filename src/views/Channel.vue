@@ -17,6 +17,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+const API_ROOT = import.meta.env.VITE_API_URL;
 const route = useRoute();
 const channelId = route.params.channelId;
 const lastLiveId = ref(null);
@@ -38,7 +39,7 @@ const getSubtractTimeFromNow = (dateString) => {
 };
 const doFetching = async (channelId) => {
   if (safeId) {
-    fetch("https://service-starknows.onrender.com/auth", {
+    fetch(`${API_ROOT}/auth`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
     })
@@ -46,7 +47,7 @@ const doFetching = async (channelId) => {
       .then((json) => {
         const body = JSON.stringify({ channelId });
         token.value = json.token;
-        fetch("https://service-starknows.onrender.com/api/last-stream", {
+        fetch(`${API_ROOT}/api/last-stream`, {
           method: "post",
           headers: {
             Authorization: `Bearer ${json.token}`,
@@ -64,7 +65,7 @@ const doFetching = async (channelId) => {
               nowStreamTime.value = getSubtractTimeFromNow(json.data);
             }, 1000);
           });
-        fetch("https://service-starknows.onrender.com/api/channel-name", {
+        fetch(`${API_ROOT}/api/channel-name`, {
           method: "post",
           headers: {
             Authorization: `Bearer ${json.token}`,
