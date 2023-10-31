@@ -7,7 +7,7 @@
             input.m-1(v-model="inputValue" @input="()=>warningText = null" @keypress.prevent="listenEnter")
             span.material-symbols-outlined.icon-timer(@click="doClick") timer
         span.text-hint
-            | {{ 'ex. ' }}
+            | {{ 'e.g. ' }}
             a(href="https://www.youtube.com/@Kintsuai" target="_blank" rel="nooppener noreferrer") {{ '@Kintsuai' }}
             | {{ ' or ' }}
             a(href="https://www.youtube.com/@Suzuna_xx7" target="_blank" rel="nooppener noreferrer") {{ '@Suzuna_xx7' }}
