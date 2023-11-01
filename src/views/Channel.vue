@@ -1,17 +1,22 @@
 <template lang="pug">
 .channel__wrapper.d-flex.f-center.f-col.w-100.h-100
-    template(v-if="!isFetching")
-      .channel__info.m-bottom
-        span {{ `距離 ` }}
-        span.channel-name {{ channelName }}
-        span {{ ` 上次開台已經過了` }}
-      .channel__time
-        span.channel__time-text.m-bottom {{ `${nowStreamTime[0]} 天 ${nowStreamTime[1]}時 ` }}
-        span.channel__time-text {{ `${nowStreamTime[2]}分 ${nowStreamTime[3]}秒` }}
-      .channel__care.d-flex.f-center.m-top
-        a(v-if="channelId" :href="`https://www.youtube.com/${channelId}?sub_confirmation=1`" target="_blank" rel="nooppener noreferrer") {{ '>> 關心主播' }}
-        a(v-if="lastLiveId" :href="`https://www.youtube.com/watch?v=${lastLiveId}`" target="_blank" rel="nooppener noreferrer") {{ '>> 緬懷主播' }}
-    .checking-text(v-else) Checking...
+  .checking-text(v-if="!resultStatus") Checking...
+  template(v-else-if="resultStatus==='valid'")
+    .channel__info.m-bottom
+      span {{ `距離 ` }}
+      span.channel-name {{ channelName }}
+      span {{ ` 上次開台已經過了` }}
+    .channel__time
+      span.channel__time-text.m-bottom {{ `${nowStreamTime[0]} 天 ${nowStreamTime[1]}時 ` }}
+      span.channel__time-text {{ `${nowStreamTime[2]}分 ${nowStreamTime[3]}秒` }}
+    .channel__care.d-flex.f-center.m-top
+      a(v-if="channelId" :href="`https://www.youtube.com/${channelId}?sub_confirmation=1`" target="_blank" rel="nooppener noreferrer") {{ '>> 關心主播' }}
+      a(v-if="lastLiveId" :href="`https://www.youtube.com/watch?v=${lastLiveId}`" target="_blank" rel="nooppener noreferrer") {{ '>> 緬懷主播' }}
+  .invalid-text(v-else-if="resultStatus==='empty'")
+    .channel__info.m-bottom
+      span {{ channelName }}
+      span {{ ` 目前沒有開台紀錄` }}
+  .invalid-text(v-else-if="resultStatus==='unsafe'") {{ '頻道 ID 錯誤' }}
 </template>
 
 <script setup>
@@ -23,7 +28,7 @@ const lastLiveId = ref(null);
 const channelName = ref("");
 const safeId = /@[0-9a-zA-Z\_\-\.]+$/gm.test(channelId);
 const token = ref(null);
-const isFetching = ref(true);
+const resultStatus = ref(null)
 const nowStreamTime = ref(null);
 const getSubtractTimeFromNow = (dateString) => {
   const dayOffset = new Date() - new Date(dateString);
@@ -61,12 +66,16 @@ const doFetching = async (channelId) => {
           .then((res) => res.json())
           .then((json) => {
             console.log("last-stream: ", json);
-            isFetching.value = false;
             lastLiveId.value = json.lastLiveId;
-            nowStreamTime.value = getSubtractTimeFromNow(json.data);
-            window.setInterval(() => {
+            if (!json.lastLiveId) {
+              resultStatus.value = 'empty'
+            } {
+              resultStatus.value = 'valid'
               nowStreamTime.value = getSubtractTimeFromNow(json.data);
-            }, 1000);
+              window.setInterval(() => {
+                nowStreamTime.value = getSubtractTimeFromNow(json.data);
+              }, 1000);
+            }
           });
         fetch("https://service-starknows.onrender.com/api/channel-name", {
           method: "post",
@@ -88,7 +97,8 @@ const doFetching = async (channelId) => {
   }
 };
 onMounted(() => {
-  doFetching(channelId);
+  if (safeId) doFetching(channelId);
+  else resultStatus = 'unsafe'
 });
 </script>
 
