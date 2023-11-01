@@ -57,6 +57,7 @@ const doFetching = async (channelId) => {
         method: "post",
         headers,
         body,
+        credentials: "include",
       })
         .then((res) => res.json())
         .then((json) => {
@@ -67,6 +68,7 @@ const doFetching = async (channelId) => {
         method: "post",
         headers,
         body,
+        credentials: "include",
       })
         .then((res) => {
           switch (res.status) {
