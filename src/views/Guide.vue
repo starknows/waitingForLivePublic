@@ -4,7 +4,7 @@
     .d-flex.f-center.f-col
         .d-flex.f-center.m-top
             span.text-id {{ '頻道ID: ' }}
-            input.m-1(v-model="inputValue" @input="()=>warningText = null" @keypress.prevent="listenEnter")
+            input.m-1(v-model="inputValue" @input="()=>warningText = null" @keypress="listenEnter")
             span.material-symbols-outlined.icon-timer(@click="doClick") timer
         span.text-hint
             | {{ 'e.g. ' }}
@@ -21,6 +21,7 @@ const router = useRouter();
 const inputValue = ref(null);
 const warningText = ref(null);
 const doClick = () => {
+  inputValue.value = inputValue.value.trim();
   const safeId = /@[0-9a-zA-Z\_\-\.]+$/gm.test(inputValue.value);
   if (safeId)
     router.push({ name: "Channel", params: { channelId: inputValue.value } });
@@ -32,11 +33,13 @@ const listenEnter = (e) => {
 </script>
 
 <style lang="sass">
+input
+    font-family: inherit
 .text-id
     font-size: 1.25rem
     font-weight: 700
 .text-hint
-    font-size: 0.75rem
+    font-size: 1rem
     opacity: 0.8
 .text-warn
     color: #E84A5F

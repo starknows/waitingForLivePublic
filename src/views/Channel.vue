@@ -1,17 +1,22 @@
 <template lang="pug">
 .channel__wrapper.d-flex.f-center.f-col.w-100.h-100
-    template(v-if="!isFetching")
-      .channel__info.m-bottom
-        span {{ `距離 ` }}
-        span.channel-name {{ channelName }}
-        span {{ ` 上次開台已經過了` }}
-      .channel__time
-        span.channel__time-text.m-bottom {{ `${nowStreamTime[0]} 天 ${nowStreamTime[1]}時 ` }}
-        span.channel__time-text {{ `${nowStreamTime[2]}分 ${nowStreamTime[3]}秒` }}
-      .channel__care.d-flex.f-center.m-top
-        a(v-if="channelId" :href="`https://www.youtube.com/${channelId}?sub_confirmation=1`" target="_blank" rel="nooppener noreferrer") {{ '>> 關心主播' }}
-        a(v-if="lastLiveId" :href="`https://www.youtube.com/watch?v=${lastLiveId}`" target="_blank" rel="nooppener noreferrer") {{ '>> 緬懷主播' }}
-    .checking-text(v-else) Checking...
+  .checking-text(v-if="!resultStatus") Checking...
+  template(v-else-if="resultStatus==='valid'")
+    .channel__info.m-bottom
+      span {{ `距離 ` }}
+      span.channel-name {{ channelName }}
+      span {{ ` 上次開台已經過了` }}
+    .channel__time
+      span.channel__time-text.m-bottom {{ `${nowStreamTime[0]} 天 ${nowStreamTime[1]}時 ` }}
+      span.channel__time-text {{ `${nowStreamTime[2]}分 ${nowStreamTime[3]}秒` }}
+    .channel__care.d-flex.f-center.m-top
+      a(v-if="channelId" :href="`https://www.youtube.com/${channelId}?sub_confirmation=1`" target="_blank" rel="nooppener noreferrer") {{ '>> 關心主播' }}
+      a(v-if="lastLiveId" :href="`https://www.youtube.com/watch?v=${lastLiveId}`" target="_blank" rel="nooppener noreferrer") {{ '>> 緬懷主播' }}
+  .invalid-text.d-flex.f-center.f-col(v-else-if="resultStatus==='empty'")
+      span.m-bottom {{ channelName }}
+      span {{ ` 目前沒有開台紀錄` }}
+  .invalid-text.d-flex.f-center(v-else-if="resultStatus==='unsafe'") {{ '頻道 ID 錯誤' }}
+  .invalid-text.d-flex.f-center(v-else-if="resultStatus==='error'") {{ '錯誤發生' }}
 </template>
 
 <script setup>
@@ -23,8 +28,7 @@ const channelId = route.params.channelId;
 const lastLiveId = ref(null);
 const channelName = ref("");
 const safeId = /@[0-9a-zA-Z\_\-\.]+$/gm.test(channelId);
-const token = ref(null);
-const isFetching = ref(true);
+const resultStatus = ref(null);
 const nowStreamTime = ref(null);
 const getSubtractTimeFromNow = (dateString) => {
   const dayOffset = new Date() - new Date(dateString);
@@ -39,53 +43,64 @@ const getSubtractTimeFromNow = (dateString) => {
 };
 const doFetching = async (channelId) => {
   if (safeId) {
-    fetch(`${API_ROOT}/auth`, {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        const body = JSON.stringify({ channelId });
-        token.value = json.token;
-        fetch(`${API_ROOT}/api/last-stream`, {
-          method: "post",
-          headers: {
-            Authorization: `Bearer ${json.token}`,
-            "Content-Type": "application/json",
-          },
-          body,
-        })
-          .then((res) => res.json())
-          .then((json) => {
-            console.log("last-stream: ", json);
-            isFetching.value = false;
-            lastLiveId.value = json.lastLiveId;
-            nowStreamTime.value = getSubtractTimeFromNow(json.data);
-            window.setInterval(() => {
-              nowStreamTime.value = getSubtractTimeFromNow(json.data);
-            }, 1000);
-          });
-        fetch(`${API_ROOT}/api/channel-name`, {
-          method: "post",
-          headers: {
-            Authorization: `Bearer ${json.token}`,
-            "Content-Type": "application/json",
-          },
-          body,
-        })
-          .then((res) => res.json())
-          .then((json) => {
-            console.log("channel-name: ", json);
-            channelName.value = json.data;
-          });
-      })
-      .catch((err) => {
-        console.log(err);
+    try {
+      const authResult = await fetch(`${API_ROOT}/auth`, {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
       });
+      const authContent = await authResult.json();
+      const body = JSON.stringify({ channelId });
+      const headers = { "Content-Type": "application/json" };
+      if (authContent.token)
+        headers["Authorization"] = `Bearer ${authContent.token}`;
+      fetch(`${API_ROOT}/api/channel-name`, {
+        method: "post",
+        headers,
+        body,
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log("channel-name: ", json);
+          channelName.value = json.data;
+        });
+      fetch(`${API_ROOT}/api/last-stream`, {
+        method: "post",
+        headers,
+        body,
+      })
+        .then((res) => {
+          switch (res.status) {
+            case 400:
+              resultStatus.value = "unsafe";
+              return null;
+            case 403:
+              resultStatus.value = "empty";
+              return null;
+            case 404:
+              resultStatus.value = "error";
+              return null;
+            default:
+              return res.json();
+          }
+        })
+        .then((json) => {
+          console.log("last-stream: ", json);
+          if (!json) return;
+          resultStatus.value = "valid";
+          lastLiveId.value = json.lastLiveId;
+          nowStreamTime.value = getSubtractTimeFromNow(json.data);
+          window.setInterval(() => {
+            nowStreamTime.value = getSubtractTimeFromNow(json.data);
+          }, 1000);
+        });
+    } catch (error) {
+      console.log("error: ", error);
+    }
   }
 };
 onMounted(() => {
-  doFetching(channelId);
+  if (safeId) doFetching(channelId);
+  else resultStatus = "unsafe";
 });
 </script>
 
@@ -136,5 +151,8 @@ onMounted(() => {
           border-bottom: 1px solid rgba(black, 0.3)
 .checking-text
   font-size: 2rem
-  color: #aaa
+  opacity: 0.8
+.invalid-text
+  font-size: 2rem
+  opacity: 0.8
 </style>
