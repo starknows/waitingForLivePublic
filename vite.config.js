@@ -26,20 +26,24 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
-      "/api": {
-        target: "http://starknows.tw",
-        changeOrigin: true,
-      },
-      "/auth": {
-        target: "http://starknows.tw",
-        changeOrigin: true,
-      }
-    },
+    // proxy: {
+    //   "/api": {
+    //     target: "http://localhost:8080",
+    //     changeOrigin: true,
+    //   },
+    //   "/auth": {
+    //     target: "http://localhost:8080",
+    //     changeOrigin: true,
+    //   }
+    // },
   },
   plugins: [
     vue(),
   ],
+  esbuild: {
+    pure: ["console.log"],
+    minify: true,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
