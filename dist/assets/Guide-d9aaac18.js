@@ -1,1 +1,0 @@
-import{u as s,r as e,o as t,c as _,t as o}from"./main-1653c90c.js";const n={class:"guide__wrapper d-flex f-center f-col w-100 h-100"},r={key:1},i={__name:"Guide",setup(a){return s(),e(null),e(null),(c,l)=>(t(),_("div",n,[(t(),_("h1",r,o("小玩具被YT封鎖了qq")))]))}};export{i as default};

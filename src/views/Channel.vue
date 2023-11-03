@@ -19,6 +19,7 @@
     span {{ ` 目前沒有開台紀錄` }}
   .invalid-text.d-flex.f-center(v-else-if="resultStatus==='unsafe'") {{ '頻道 ID 錯誤' }}
   .invalid-text.d-flex.f-center(v-else-if="resultStatus==='error'") {{ '錯誤發生' }}
+  .invalid-text.d-flex.f-center(v-else-if="resultStatus==='429'") {{ '服務被封鎖中，暫時無法使用' }}
 </template>
 
 <script setup>
@@ -82,6 +83,7 @@ const doFetching = async (channelId) => {
           }
         })
         .then((json) => {
+          if (json.status === 429) resultStatus.value = "429";
           console.log("last-stream: ", json);
           if (!json) return;
           resultStatus.value = "valid";
@@ -101,7 +103,7 @@ const doFetching = async (channelId) => {
 };
 onMounted(() => {
   if (safeId) doFetching(channelId);
-  else resultStatus = "unsafe";
+  else resultStatus.value = "unsafe";
 });
 </script>
 

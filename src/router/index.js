@@ -4,12 +4,12 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/:channelId?',
+      path: '/',
       name: 'Guide',
       component: () => import('../views/Guide.vue')
     },
     {
-      path: '/test/:channelId',
+      path: '/:channelId',
       name: 'Channel',
       component: () => import('../views/Channel.vue')
     }
