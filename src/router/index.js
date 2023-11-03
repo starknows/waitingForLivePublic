@@ -8,11 +8,11 @@ const router = createRouter({
       name: 'Guide',
       component: () => import('../views/Guide.vue')
     },
-    // {
-    //   path: '/:channelId',
-    //   name: 'Channel',
-    //   component: () => import('../views/Channel.vue')
-    // }
+    {
+      path: '/test/:channelId',
+      name: 'Channel',
+      component: () => import('../views/Channel.vue')
+    }
   ]
 })
 
