@@ -83,11 +83,6 @@ const doFetching = async (channelId) => {
           res.json();
         })
         .then((json) => {
-          if (json.status.includes("429")) {
-            console.log("last-stream: ", json);
-            resultStatus.value = "429";
-            return;
-          }
           if (resultStatus.value) return;
           resultStatus.value = "valid";
           lastLiveId.value = json.lastLiveId;
