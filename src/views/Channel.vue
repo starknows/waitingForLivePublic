@@ -80,9 +80,10 @@ const doFetching = async (channelId) => {
               break;
             default:
           }
-          res.json();
+          return res.json();
         })
         .then((json) => {
+          console.log("json: ", json);
           if (resultStatus.value) return;
           resultStatus.value = "valid";
           lastLiveId.value = json.lastLiveId;

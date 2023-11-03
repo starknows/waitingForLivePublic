@@ -26,16 +26,16 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
-      "/api": {
-        target: "http://service.starknows.tw",
-        changeOrigin: true,
-      },
-      "/auth": {
-        target: "http://service.starknows.tw",
-        changeOrigin: true,
-      }
-    },
+    // proxy: {
+    //   "/api": {
+    //     target: "http://service.starknows.tw",
+    //     changeOrigin: true,
+    //   },
+    //   "/auth": {
+    //     target: "http://service.starknows.tw",
+    //     changeOrigin: true,
+    //   }
+    // },
   },
   plugins: [
     vue(),
