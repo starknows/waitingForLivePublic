@@ -1,17 +1,20 @@
 <template lang="pug">
 .guide__wrapper.d-flex.f-center.f-col.w-100.h-100
-    h1 {{ '你推多久沒開台了？' }}
-    .d-flex.f-center.f-col
-        .d-flex.f-center.m-top
-            span.text-id {{ '頻道ID: ' }}
-            input.m-1(v-model="inputValue" @input="()=>warningText = null" @keypress.prevent="listenEnter")
-            span.material-symbols-outlined.icon-timer(@click="doClick") timer
-        span.text-hint
-            | {{ 'ex. ' }}
-            a(href="https://www.youtube.com/@Kintsuai" target="_blank" rel="nooppener noreferrer") {{ '@Kintsuai' }}
-            | {{ ' or ' }}
-            a(href="https://www.youtube.com/@Suzuna_xx7" target="_blank" rel="nooppener noreferrer") {{ '@Suzuna_xx7' }}
-        span.text-warn.m-top(v-if="warningText") {{ warningText }}
+    template(v-if="false")
+        h1 {{ '你推多久沒開台了？' }}
+        .d-flex.f-center.f-col
+            .d-flex.f-center.m-top
+                span.text-id {{ '頻道ID: ' }}
+                input.m-1(v-model="inputValue" @input="()=>warningText = null" @keypress="listenEnter")
+                span.material-symbols-outlined.icon-timer(@click="doClick") timer
+            span.text-hint
+                | {{ 'e.g. ' }}
+                a(href="https://www.youtube.com/@Kintsuai" target="_blank" rel="nooppener noreferrer") {{ '@Kintsuai' }}
+                | {{ ' or ' }}
+                a(href="https://www.youtube.com/@Suzuna_xx7" target="_blank" rel="nooppener noreferrer") {{ '@Suzuna_xx7' }}
+            span.text-warn.m-top(v-if="warningText") {{ warningText }}
+    template(v-else)
+        h1 {{ '小玩具被YT封鎖了qq' }}
 </template>
 
 <script setup>
@@ -21,22 +24,25 @@ const router = useRouter();
 const inputValue = ref(null);
 const warningText = ref(null);
 const doClick = () => {
-  const safeId = /@[0-9a-zA-Z\_\-\.]+$/gm.test(inputValue.value);
-  if (safeId)
-    router.push({ name: "Channel", params: { channelId: inputValue.value } });
-  else warningText.value = "ID格式有誤";
+    inputValue.value = inputValue.value.trim();
+    const safeId = /@[0-9a-zA-Z\_\-\.]+$/gm.test(inputValue.value);
+    if (safeId)
+        router.push({ name: "Channel", params: { channelId: inputValue.value } });
+    else warningText.value = "ID格式有誤";
 };
 const listenEnter = (e) => {
-  if (e.key === "Enter") doClick();
+    if (e.key === "Enter") doClick();
 };
 </script>
 
 <style lang="sass">
+input
+    font-family: inherit
 .text-id
     font-size: 1.25rem
     font-weight: 700
 .text-hint
-    font-size: 0.75rem
+    font-size: 1rem
     opacity: 0.8
 .text-warn
     color: #E84A5F
